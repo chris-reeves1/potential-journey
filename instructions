@@ -38,6 +38,6 @@ Stretch AI is ok:
     - Run conytainers + smoke test.
 
 Extra Stretch:
-    - Parametrization -  bool param for regular build or experimental build (docker-slim). 
+    - Parametrization -  bool param for regular build or experimental build (docker-slim). == https://github.com/slimtoolkit/slim
 
 
