@@ -1,0 +1,62 @@
+kubectl create namespace dev
+kubectl create namespace prod
+
+kubectl kustomize app/overlays/dev
+kubectl kustomize app/overlays/prod
+
+kubectl kustomize app/overlays/dev > rendered/dev.yaml
+kubectl kustomize app/overlays/prod > rendered/prod.yaml
+
+kubectl apply --dry-run=server -f rendered/dev.yaml
+kubectl apply --dry-run=server -f rendered/prod.yaml
+
+kubeconform -strict -summary rendered/dev.yaml
+kubeconform -strict -summary rendered/prod.yaml
+
+conftest test --policy policy rendered-dev.yaml
+
+or:
+
+kubectl apply -k app/overlays/dev
+kubectl apply -k app/overlays/prod
+
+kubectl get deployments -n prod
+kubectl get pods -n prod
+kubectl get svc -n prod
+
+
+
+
+conform install:
+
+
+wget https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+
+tar -xvf kubeconform-linux-amd64.tar.gz
+
+
+sudo mv kubeconform /usr/local/bin/
+sudo chmod +x /usr/local/bin/kubeconform
+
+kubeconform -h
+
+
+
+conftest install:
+
+sudo apt update
+sudo apt install -y wget tar
+
+LATEST_VERSION=$(wget -O - "https://api.github.com/repos/open-policy-agent/conftest/releases/latest" \
+  | grep '"tag_name":' \
+  | sed -E 's/.*"([^"]+)".*/\1/' \
+  | cut -c 2-)
+
+ARCH=$(arch)
+SYSTEM=$(uname)
+
+wget "https://github.com/open-policy-agent/conftest/releases/download/v${LATEST_VERSION}/conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz"
+
+tar xzf conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz
+
+sudo mv conftest /usr/local/bin/
